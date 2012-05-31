@@ -32,7 +32,6 @@ static void print_timedelta(time_t *delta)
 static void handle_sigchld(int signum)
 {
     if (signum == SIGCHLD) {
-        printf("\e[?25h");
         struct timeval time_end, delta;
 
         int z = gettimeofday(&time_end, NULL);
@@ -50,6 +49,16 @@ static void usage(char * progname)
 {
     printf("Usage : %s prog args\n", progname);
     exit(EX_USAGE);
+}
+
+static void hide_cursor()
+{
+    printf("\e[?25l");
+}
+
+static void show_cursor()
+{
+    printf("\e[?25h");
 }
 
 static void draw_pb(int pb_size, int totaltime_sec)
@@ -74,7 +83,8 @@ static void draw_pb(int pb_size, int totaltime_sec)
     printf("]");
     printf("\e[%dD", 1+pb_size);
 
-    printf("\e[?25l");
+    hide_cursor();
+    atexit(show_cursor);
     for(i=0;i<8*pb_size;i++) {
         int m = i % 8;
         printf("%s", boxes[m]);
@@ -84,7 +94,6 @@ static void draw_pb(int pb_size, int totaltime_sec)
         fflush(stdout);
         usleep(time_frame_usec);
     }
-    printf("\e[?25h");
     printf("\n");
 }
 
