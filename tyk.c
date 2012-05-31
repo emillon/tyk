@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <sysexits.h>
 #include <unistd.h>
+#include <signal.h>
+
+static void handle_sigchld(int signum)
+{
+    if (signum == SIGCHLD) {
+        exit(0);
+    }
+}
 
 static void usage(char * progname)
 {
@@ -25,7 +33,13 @@ int main(int argc, char** argv)
         perror("fork");
     } else if (pid > 0) {
         /* Parent */
-        waitpid(pid, NULL, 0);
+        signal(SIGCHLD, handle_sigchld);
+        int i;
+        for (i=0;;i++) {
+            putchar('.');
+            fflush(stdout);
+            sleep(1);
+        }
     } else {
         /* Child */
         int z = execvp(progname, &argv[1]);
