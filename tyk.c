@@ -1,3 +1,13 @@
+/* Copyright (c) 2012 Etienne Millon <me@emillon.org>
+ * ----------------------------------------------------------------------------
+ *                        "THE BEER-WARE LICENSE"
+ *
+ * <me@emillon.org> wrote this file. As long as you retain this notice you can
+ * do whatever you want with this stuff. If we meet some day, and you think this
+ * stuff is worth it, you can buy me a beer in return.
+ * ----------------------------------------------------------------------------
+ */
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/wait.h>
