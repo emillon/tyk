@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysexits.h>
@@ -17,9 +19,19 @@ int main(int argc, char** argv)
 
     char * progname = argv[1];
 
-    int z = execvp(progname, &argv[1]);
-    if (z != 0) {
-        perror("execvp");
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+    } else if (pid > 0) {
+        /* Parent */
+        waitpid(pid, NULL, 0);
+    } else {
+        /* Child */
+        int z = execvp(progname, &argv[1]);
+        if (z != 0) {
+            perror("execvp");
+        }
     }
 
     return 0;
