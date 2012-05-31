@@ -132,9 +132,14 @@ int main(int argc, char** argv)
         /* Parent */
         signal(SIGCHLD, handle_sigchld);
         draw_pb(10, timeout_sec);
+        printf("Timeout.\n");
+        z = kill(pid, SIGTERM);
+        if (z != 0) {
+            perror("kill");
+        }
     } else {
         /* Child */
-        int z = execvp(progname, &argv[prog_offset]);
+        z = execvp(progname, &argv[prog_offset]);
         if (z != 0) {
             perror("execvp");
         }
