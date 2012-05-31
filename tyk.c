@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
+#include <string.h>
 
 static struct timeval time_start;
 
@@ -47,7 +48,7 @@ static void handle_sigchld(int signum)
 
 static void usage(char * progname)
 {
-    printf("Usage : %s prog args\n", progname);
+    printf("Usage : %s [-t time] prog args\n", progname);
     exit(EX_USAGE);
 }
 
@@ -97,14 +98,26 @@ static void draw_pb(int pb_size, int totaltime_sec)
     printf("\n");
 }
 
+static int parse_time(char *s)
+{
+    return atoi(s);
+}
+
 int main(int argc, char** argv)
 {
-
     if (argc < 2) {
         usage(argv[0]);
     }
 
-    char * progname = argv[1];
+    int timeout_sec = 8;
+    int prog_offset = 1;
+
+    if(!strcmp(argv[1], "-t")) {
+        timeout_sec = parse_time(argv[2]);
+        prog_offset = 3;
+    }
+
+    char * progname = argv[prog_offset];
 
     int z = gettimeofday(&time_start, NULL);
     if (z != 0) {
@@ -118,10 +131,10 @@ int main(int argc, char** argv)
     } else if (pid > 0) {
         /* Parent */
         signal(SIGCHLD, handle_sigchld);
-        draw_pb(10, 8);
+        draw_pb(10, timeout_sec);
     } else {
         /* Child */
-        int z = execvp(progname, &argv[1]);
+        int z = execvp(progname, &argv[prog_offset]);
         if (z != 0) {
             perror("execvp");
         }
