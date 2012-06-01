@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 static struct timeval time_start;
+static pid_t child_pid;
 
 static void print_timedelta(time_t *delta)
 {
@@ -41,7 +42,16 @@ static void print_timedelta(time_t *delta)
     printf("\n");
 }
 
-static void handle_sigchld(int signum)
+static void timeout_process (void)
+{
+    printf("Timeout.\n");
+    int z = kill(child_pid, SIGTERM);
+    if (z != 0) {
+        perror("kill");
+    }
+}
+
+static void handle_signals(int signum)
 {
     if (signum == SIGCHLD) {
         struct timeval time_end, delta;
@@ -54,6 +64,8 @@ static void handle_sigchld(int signum)
         timersub (&time_end, &time_start, &delta);
         print_timedelta(&delta.tv_sec);
         exit(0);
+    } else if (signum == SIGALRM) {
+        timeout_process();
     }
 }
 
@@ -171,19 +183,17 @@ int main(int argc, char** argv)
         perror("gettimeofday");
     }
 
-    pid_t pid = fork();
+    child_pid = fork();
 
-    if (pid < 0) {
+    if (child_pid < 0) {
         perror("fork");
-    } else if (pid > 0) {
+    } else if (child_pid > 0) {
         /* Parent */
-        signal(SIGCHLD, handle_sigchld);
+        signal(SIGCHLD, handle_signals);
+        signal(SIGALRM, handle_signals);
+        alarm(timeout_sec);
         draw_pb(pb_size, timeout_sec);
-        printf("Timeout.\n");
-        z = kill(pid, SIGTERM);
-        if (z != 0) {
-            perror("kill");
-        }
+        waitpid(child_pid, NULL, 0);
     } else {
         /* Child */
         z = execvp(progname, &argv[optind]);
