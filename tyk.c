@@ -58,7 +58,7 @@ static void handle_sigchld(int signum)
 
 static void usage(char * progname)
 {
-    printf("Usage : %s [-t time] prog args\n", progname);
+    printf("Usage : %s [-t time] [-s size] prog args\n", progname);
     exit(EX_USAGE);
 }
 
@@ -120,12 +120,16 @@ int main(int argc, char** argv)
     }
 
     int timeout_sec = 8;
+    int pb_size = 10;
 
     int opt;
-    while ((opt = getopt(argc, argv, "t:")) != -1) {
+    while ((opt = getopt(argc, argv, "t:s:")) != -1) {
         switch (opt) {
             case 't':
                 timeout_sec = parse_time(optarg);
+                break;
+            case 's':
+                pb_size = atoi(optarg);
                 break;
             default:
                 printf("No such option : %d\n", opt);
@@ -148,7 +152,7 @@ int main(int argc, char** argv)
     } else if (pid > 0) {
         /* Parent */
         signal(SIGCHLD, handle_sigchld);
-        draw_pb(10, timeout_sec);
+        draw_pb(pb_size, timeout_sec);
         printf("Timeout.\n");
         z = kill(pid, SIGTERM);
         if (z != 0) {
