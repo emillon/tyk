@@ -8,17 +8,17 @@
  * ----------------------------------------------------------------------------
  */
 
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/wait.h>
+#include <ctype.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sysexits.h>
-#include <unistd.h>
-#include <signal.h>
-#include <time.h>
 #include <string.h>
-#include <ctype.h>
+#include <sysexits.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
 
 static struct timeval time_start;
 
