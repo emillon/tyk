@@ -14,7 +14,7 @@ process is killed.
 Tea mode
 --------
 
-`tyk -t 180 cat` will wait 3 minutes displaying a nice progress bar. Shortly after,
+`tyk -t 3m cat` will wait 3 minutes displaying a nice progress bar. Shortly after,
 this kills the `cat`. Enjoy your tea.
 
 Bugs
