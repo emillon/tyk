@@ -18,6 +18,7 @@
 #include <signal.h>
 #include <time.h>
 #include <string.h>
+#include <ctype.h>
 
 static struct timeval time_start;
 
@@ -105,6 +106,36 @@ static void draw_pb(int pb_size, int totaltime_sec)
 
 static int parse_time(char *s)
 {
+    size_t n = strlen(s);
+
+    if (n == 0) {
+        return -1;
+    }
+
+    char sfx = s[n-1];
+
+    if (isalpha(sfx)) {
+        int mul = 1;
+        switch (sfx) {
+            case 'h':
+                mul = 60*60;
+                break;
+            case 'm':
+                mul = 60;
+                break;
+            default:
+                printf("Unknown time suffix %c\n", sfx);
+                exit(EX_USAGE);
+                break;
+        }
+
+        char * ds = strdup(s);
+        ds[n-1] = '\0';
+        int base = atoi(ds);
+        free(ds);
+        return (base * mul);
+    }
+
     return atoi(s);
 }
 
