@@ -87,12 +87,7 @@ static void draw_pb(int pb_size, int totaltime_sec)
         , "█"
         };
 
-    printf("[");
-    for (i=0;i<pb_size;i++) {
-        printf(" ");
-    }
-    printf("]");
-    printf("\e[%dD", 1+pb_size);
+    printf("[\e[%dC]\e[%dD", pb_size, pb_size+1);
 
     hide_cursor();
     atexit(show_cursor);
