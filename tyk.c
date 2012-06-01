@@ -71,7 +71,7 @@ static void handle_signals(int signum)
 
 static void usage(char * progname)
 {
-    printf("Usage : %s [-t time] [-s size] prog args\n", progname);
+    printf("Usage : %s [-t time] [-s size] [-n] prog args\n", progname);
     exit(EX_USAGE);
 }
 
@@ -159,15 +159,19 @@ int main(int argc, char** argv)
 
     int timeout_sec = 8;
     int pb_size = 10;
+    int show_progress = 1;
 
     int opt;
-    while ((opt = getopt(argc, argv, "t:s:")) != -1) {
+    while ((opt = getopt(argc, argv, "t:s:n")) != -1) {
         switch (opt) {
             case 't':
                 timeout_sec = parse_time(optarg);
                 break;
             case 's':
                 pb_size = atoi(optarg);
+                break;
+            case 'n':
+                show_progress = 0;
                 break;
             default:
                 printf("No such option : %d\n", opt);
@@ -192,7 +196,9 @@ int main(int argc, char** argv)
         signal(SIGCHLD, handle_signals);
         signal(SIGALRM, handle_signals);
         alarm(timeout_sec);
-        draw_pb(pb_size, timeout_sec);
+        if (show_progress) {
+            draw_pb(pb_size, timeout_sec);
+        }
         waitpid(child_pid, NULL, 0);
     } else {
         /* Child */
