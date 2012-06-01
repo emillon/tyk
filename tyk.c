@@ -120,14 +120,21 @@ int main(int argc, char** argv)
     }
 
     int timeout_sec = 8;
-    int prog_offset = 1;
 
-    if(!strcmp(argv[1], "-t")) {
-        timeout_sec = parse_time(argv[2]);
-        prog_offset = 3;
+    int opt;
+    while ((opt = getopt(argc, argv, "t:")) != -1) {
+        switch (opt) {
+            case 't':
+                timeout_sec = parse_time(optarg);
+                break;
+            default:
+                printf("No such option : %d\n", opt);
+                usage(argv[0]);
+                break;
+        }
     }
 
-    char * progname = argv[prog_offset];
+    char * progname = argv[optind];
 
     int z = gettimeofday(&time_start, NULL);
     if (z != 0) {
@@ -149,7 +156,7 @@ int main(int argc, char** argv)
         }
     } else {
         /* Child */
-        z = execvp(progname, &argv[prog_offset]);
+        z = execvp(progname, &argv[optind]);
         if (z != 0) {
             perror("execvp");
         }
